@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CommNetConstellation.CommNetLayer
 {
     /// <summary>
-    /// Extend the functionality of the KSP's CommNetNetwork (co-primary model in the Model–view–controller sense; CommNet<> is the other co-primary one)
+    /// Extend the functionality of the KSP's CommNetNetwork (co-primary model in the Model–view–controller sense; CommNet is the other co-primary one)
     /// </summary>
     public class CNCCommNetNetwork : CommNetNetwork
     {
@@ -12,27 +12,39 @@ namespace CommNetConstellation.CommNetLayer
         //private float nextUpdateTime = 0.0f;
         //private const float networkInterval = 0.1f; // in seconds
 
+        private bool isPlanetarium = false;
+
         protected override void Awake()
         {
-            CNCLog.Verbose("CommNet Network booting");
+            CNCLog.Verbose("CNC Network booting");
 
-            CommNetNetwork.Instance = this;
-            this.CommNet = new CNCCommNetwork();
+            Instance = this;
+            CommNet = new CNCCommNetwork();
+            GameEvents.CommNet.OnNetworkInitialized.Fire();
 
             if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
             {
-                GameEvents.onPlanetariumTargetChanged.Add(new EventData<MapObject>.OnEvent(this.OnMapFocusChange));
+                GameEvents.onPlanetariumTargetChanged.Add(OnMapFocusChange);
+                isPlanetarium = true;
             }
+            GameEvents.OnGameSettingsApplied.Add(ResetNetwork);
+        }
 
-            GameEvents.OnGameSettingsApplied.Add(new EventVoid.OnEvent(this.ResetNetwork));
-            ResetNetwork(); // Please retain this so that KSP can properly reset
+        protected override void OnDestroy()
+        {
+            CNCLog.Verbose("CNC Network shutting down");
+
+            if (isPlanetarium) GameEvents.onPlanetariumTargetChanged.Remove(OnMapFocusChange);
+            GameEvents.OnGameSettingsApplied.Remove(ResetNetwork);
+
+            base.OnDestroy();
         }
 
         protected new void ResetNetwork()
         {
-            CNCLog.Verbose("CommNet Network rebooted");
+            CNCLog.Verbose("CNC Network rebooted");
 
-            this.CommNet = new CNCCommNetwork();
+            CommNet = new CNCCommNetwork();
             GameEvents.CommNet.OnNetworkInitialized.Fire();
         }
 
