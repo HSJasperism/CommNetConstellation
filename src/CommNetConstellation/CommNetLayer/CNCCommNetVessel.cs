@@ -58,7 +58,7 @@ namespace CommNetConstellation.CommNetLayer
         public bool antennaCombinable;
         public AntennaType antennaType;
         public Part partReference;
-        public ProtoPartSnapshot partSnapshotReference = null;
+        public ProtoPartSnapshot partSnapshotReference;
         public bool inUse; // selected by user to be used
         public bool canComm; //fixed and deployable antennas
         public Guid Target;
@@ -89,7 +89,7 @@ namespace CommNetConstellation.CommNetLayer
 
         protected short strongestFreq = -1;
         protected List<CNCAntennaPartInfo> vesselAntennas = new List<CNCAntennaPartInfo>();
-        protected bool stageActivated = false;
+        protected bool stageActivated;
         public bool IsCommandable = true;
 
         /// <summary>

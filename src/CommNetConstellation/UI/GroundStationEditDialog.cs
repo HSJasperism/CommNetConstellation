@@ -157,7 +157,7 @@ namespace CommNetConstellation.UI
                     }
                     else if (!Constellation.isFrequencyValid(newFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " + 
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " +
                     }
 
                     //ALL OK
@@ -168,16 +168,19 @@ namespace CommNetConstellation.UI
                 }
                 catch (FormatException e)
                 {
+                    CNCLog.Error(e);
                     throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format"));//"Frequency must be numeric only"
                 }
                 catch (OverflowException e)
                 {
+                    CNCLog.Error(e);
                     throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue));//string.Format("Frequency must be equal to or less than {0}", )
                 }
             }
             catch (Exception e)
             {
-                ScreenMessage msg = new ScreenMessage("<color=red>" + e.Message + "</color>", CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);
+                CNCLog.Error(e);
+                var msg = new ScreenMessage("<color=red>" + e.Message + "</color>", CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);
                 ScreenMessages.PostScreenMessage(msg);
             }
         }

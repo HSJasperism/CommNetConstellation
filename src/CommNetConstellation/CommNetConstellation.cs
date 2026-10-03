@@ -9,7 +9,7 @@ namespace CommNetConstellation
     /// Script to be ran in flight and tracking station
     /// </summary>
     [KSPAddon(KSPAddon.Startup.TrackingStation, false)]
-    public class CommNetConstellationDuplicate : CommNetConstellation
+    public class CommNetConstellationTracking : CommNetConstellation
     {
         public override void Start()
         {
@@ -18,20 +18,17 @@ namespace CommNetConstellation
 
         protected override void Launch()
         {
-            if (this.controlDialog == null)
-            {
-                this.controlDialog = new ConstellationControlDialog(Localizer.Format("#CNC_CommNetConstellation_title"));//"CommNet Constellation - <color=#00ff00>Control Panel</color>"
-            }
-            this.controlDialog.launch();
+            controlDialog ??= new ConstellationControlDialog(Localizer.Format("#CNC_CommNetConstellation_title"));
+            controlDialog.launch();
         }
     }
 
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class CommNetConstellation : MonoBehaviour
     {
-        protected ApplicationLauncherButton launcherButton = null;
+        protected ApplicationLauncherButton launcherButton;
         protected ConstellationControlDialog controlDialog;
-        protected static Texture2D appIconTexture = null;
+        protected static Texture2D appIconTexture;
 
         public virtual void Start()
         {
@@ -48,19 +45,16 @@ namespace CommNetConstellation
 
         protected virtual void Launch()
         {
-            if (this.controlDialog == null)
-            {
-                this.controlDialog = new ConstellationControlDialog(Localizer.Format("#CNC_CommNetConstellation_title"));//"CommNet Constellation - <color=#00ff00>Control Panel</color>"
-            }
-            this.controlDialog.launch();
+            controlDialog ??= new ConstellationControlDialog(Localizer.Format("#CNC_CommNetConstellation_title"));
+            controlDialog.launch();
         }
 
         protected virtual void Dismiss()
         {
-            if (this.controlDialog != null)
+            if (controlDialog != null)
             {
-                this.controlDialog.dismiss();
-                this.controlDialog = null;
+                controlDialog.dismiss();
+                controlDialog = null;
             }
         }
 
@@ -69,13 +63,13 @@ namespace CommNetConstellation
             if (appIconTexture == null)
             {
                 var interfaceTexture = UIUtils.loadImage("cnclauncherbutton");
-                Texture2D temp = UIUtils.getReadableCopy(interfaceTexture);
+                var temp = UIUtils.getReadableCopy(interfaceTexture);
                 appIconTexture = UIUtils.createSubregionTexture(temp, 1, 1, 38, 38);
                 Texture2D.DestroyImmediate(temp);
             }
 
             this.launcherButton = ApplicationLauncher.Instance.AddModApplication(
-                Launch, Dismiss, OnHover, OnHoverOut, OnEnable, OnDisable, 
+                Launch, Dismiss, OnHover, OnHoverOut, OnEnable, OnDisable,
                 scenes, appIconTexture);
         }
 

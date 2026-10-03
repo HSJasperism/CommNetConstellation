@@ -19,10 +19,10 @@ namespace CommNetConstellation.CommNetLayer
          * 3) GameScenes.SPACECENTER is recommended so that the constellation data can be verified and error-corrected in advance
          */
 
-        private CNCCommNetUI CustomCommNetUI = null;
-        private CNCCommNetNetwork CustomCommNetNetwork = null;
-        private CNCTelemetryUpdate CustomCommNetTelemetry = null;
-        private CNCCommNetUIModeButton CustomCommNetModeButton = null;
+        private CNCCommNetUI CustomCommNetUI;
+        private CNCCommNetNetwork CustomCommNetNetwork;
+        private CNCTelemetryUpdate CustomCommNetTelemetry;
+        private CNCCommNetUIModeButton CustomCommNetModeButton;
         public List<Constellation> constellations = new List<Constellation>();
         public List<CNCCommNetHome> groundStations = new List<CNCCommNetHome>();
         private List<CNCCommNetHome> persistentGroundStations = new List<CNCCommNetHome>();
@@ -196,7 +196,7 @@ namespace CommNetConstellation.CommNetLayer
                             CNCCommNetUI.CustomModeFlightMap = (CNCCommNetUI.CustomDisplayMode)((int)Enum.Parse(typeof(CNCCommNetUI.CustomDisplayMode), value.value));
                             break;
                         case "HideGroundStations":
-                            this.hideGroundStations = Boolean.Parse(value.value);
+                            this.hideGroundStations = bool.Parse(value.value);
                             break;
                         case "LegacyOrbitLineColor":
                             CNCSettings.Instance.LegacyOrbitLineColor = Boolean.Parse(value.value);
@@ -389,7 +389,7 @@ namespace CommNetConstellation.CommNetLayer
                 List<Vessel> allVessels = FlightGlobals.fetch.vessels;
                 for (int i = 0; i < allVessels.Count; i++)
                 {
-                    if (allVessels[i].connection != null && 
+                    if (allVessels[i].connection != null &&
                         ((allVessels[i].connection as CNCCommNetVessel).IsCommandable && allVessels[i].vesselType != VesselType.Unknown)// && allVessels[i].vesselType != VesselType.Debris) // debris could be spent stage with functional probes and antennas
                         || (allVessels[i].vesselType == VesselType.DeployedScienceController))
                     {

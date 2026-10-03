@@ -89,24 +89,26 @@ namespace CommNetConstellation.UI.VesselMgtTools
                     }
                     else if (!Constellation.isFrequencyValid(inputFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " + 
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " +
                     }
 
-                    if (base.cncVessel != null && antennaInfo != null && inputFreq >= 0)
+                    if (cncVessel != null && antennaInfo != null && inputFreq >= 0)
                     {
-                        base.cncVessel.updateFrequency(antennaInfo, inputFreq);
-                        base.cncVessel.OnAntennaChange();
-                        this.selfRefresh();
+                        cncVessel.updateFrequency(antennaInfo, inputFreq);
+                        cncVessel.OnAntennaChange();
+                        selfRefresh();
                         actionCallbacks[0]();
                     }
                 }
                 catch (FormatException e)
                 {
-                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format"));//"Frequency must be numeric only"
+                    CNCLog.Error(e);
+                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format")); //"Frequency must be numeric only"
                 }
                 catch (OverflowException e)
                 {
-                    throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue));//string.Format("Frequency must be equal to or less than {0}", )
+                    CNCLog.Error(e);
+                    throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue)); //"Frequency must be equal to or less than {0}"
                 }
             }
             catch (Exception e)

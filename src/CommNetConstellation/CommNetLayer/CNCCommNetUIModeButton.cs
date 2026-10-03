@@ -5,7 +5,7 @@ namespace CommNetConstellation.CommNetLayer
 {
     public class CNCCommNetUIModeButton : CommNetUIModeButton
     {
-        private bool initialised = false;
+        private bool initialised;
 
         public void copyOf(CommNetUIModeButton stockTUButton)
         {

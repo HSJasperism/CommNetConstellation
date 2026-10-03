@@ -1,8 +1,8 @@
-﻿using CommNet;
+﻿using System;
+using System.Collections.Generic;
+using CommNet;
 using CommNetConstellation.UI;
 using KSP.Localization;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CommNetConstellation.CommNetLayer
@@ -25,25 +25,38 @@ namespace CommNetConstellation.CommNetLayer
         [Persistent] public string ID;
         [Persistent] public Color Color = Color.red;
         [Persistent] protected string OptionalName = "";
-        [Persistent] public short TechLevel = 0;
-        [Persistent] public bool OverrideLatLongAlt = false;
-        [Persistent] public double CustomLatitude = 0.0;
-        [Persistent] public double CustomLongitude = 0.0;
-        [Persistent] public double CustomAltitude = 0.0;
+        [Persistent] public short TechLevel;
+        [Persistent] public bool OverrideLatLongAlt;
+        [Persistent] public double CustomLatitude;
+        [Persistent] public double CustomLongitude;
+        [Persistent] public double CustomAltitude;
         [Persistent] public string CustomCelestialBody = "";
         [Persistent(collectionIndex = "Frequency")] protected List<short> Frequencies = new List<short>();
 
         //for low-gc operations
         protected short[] sorted_frequency_array;
 
-        public double altitude { get { return this.alt; } set { this.alt = value; } }
-        public double latitude { get { return this.lat; } set { this.lat = value; } }
-        public double longitude { get { return this.lon; } set { this.lon = value; } }
-        public CommNode commNode { get { return this.comm; } }
+        public double altitude
+        {
+            get => alt;
+            set => alt = value;
+        }
+        public double latitude
+        {
+            get => lat;
+            set => lat = value;
+        }
+        public double longitude
+        {
+            get => lon;
+            set => lon = value;
+        }
+        public CommNode commNode => comm;
+
         public string stationName
         {
-            get { return (this.OptionalName.Length == 0)? this.displaynodeName : this.OptionalName; }
-            set { this.OptionalName = value; this.comm.name = this.comm.displayName = value; }
+            get => (OptionalName.Length == 0)? displaynodeName : OptionalName;
+            set { OptionalName = value; comm.name = comm.displayName = value; }
         }
 
         /// <summary>
@@ -55,12 +68,12 @@ namespace CommNetConstellation.CommNetLayer
         {
             CNCLog.Verbose("Stock CommNet Home '{0}' added", stockHome.nodeName);
 
-            this.ID = stockHome.nodeName;
-            this.nodeName = stockHome.nodeName;
-            this.displaynodeName = Localizer.Format(stockHome.displaynodeName);
-            this.nodeTransform = stockHome.nodeTransform;
-            this.isKSC = stockHome.isKSC;
-            this.body = stockHome.GetComponentInParent<CelestialBody>();
+            ID = stockHome.nodeName;
+            nodeName = stockHome.nodeName;
+            displaynodeName = Localizer.Format(stockHome.displaynodeName);
+            nodeTransform = stockHome.nodeTransform;
+            isKSC = stockHome.isKSC;
+            body = stockHome.GetComponentInParent<CelestialBody>();
 
             //comm, lat, alt, lon are initialised by CreateNode() later
         }
@@ -70,15 +83,15 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void applySavedChanges(CNCCommNetHome stationSnapshot)
         {
-            this.Color = stationSnapshot.Color;
-            this.Frequencies = stationSnapshot.Frequencies;
-            this.OptionalName = stationSnapshot.OptionalName;
-            this.TechLevel = stationSnapshot.TechLevel;
-            this.OverrideLatLongAlt = stationSnapshot.OverrideLatLongAlt;
-            this.CustomLatitude = stationSnapshot.CustomLatitude;
-            this.CustomLongitude = stationSnapshot.CustomLongitude;
-            this.CustomAltitude = stationSnapshot.CustomAltitude;
-            this.CustomCelestialBody = stationSnapshot.CustomCelestialBody;
+            Color = stationSnapshot.Color;
+            Frequencies = stationSnapshot.Frequencies;
+            OptionalName = stationSnapshot.OptionalName;
+            TechLevel = stationSnapshot.TechLevel;
+            OverrideLatLongAlt = stationSnapshot.OverrideLatLongAlt;
+            CustomLatitude = stationSnapshot.CustomLatitude;
+            CustomLongitude = stationSnapshot.CustomLongitude;
+            CustomAltitude = stationSnapshot.CustomAltitude;
+            CustomCelestialBody = stationSnapshot.CustomCelestialBody;
         }
 
         /// <summary>
@@ -86,10 +99,10 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void replaceFrequency(short oldFrequency, short newFrequency)
         {
-            this.Frequencies.Remove(oldFrequency);
-            this.Frequencies.Add(newFrequency);
-            this.Frequencies.Sort();
-            regenerateFrequencyArray(this.Frequencies);
+            Frequencies.Remove(oldFrequency);
+            Frequencies.Add(newFrequency);
+            Frequencies.Sort();
+            regenerateFrequencyArray(Frequencies);
         }
 
         /// <summary>
@@ -97,8 +110,8 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void deleteFrequency(short frequency)
         {
-            this.Frequencies.Remove(frequency);
-            regenerateFrequencyArray(this.Frequencies);
+            Frequencies.Remove(frequency);
+            regenerateFrequencyArray(Frequencies);
         }
 
         /// <summary>
@@ -106,11 +119,11 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public short[] getFrequencyArray()
         {
-            if(this.sorted_frequency_array == null)
+            if(sorted_frequency_array == null)
             {
-                regenerateFrequencyArray(this.Frequencies);
+                regenerateFrequencyArray(Frequencies);
             }
-            return this.sorted_frequency_array;
+            return sorted_frequency_array;
         }
 
         /// <summary>
@@ -118,7 +131,7 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public List<short> getFrequencyList()
         {
-            return this.Frequencies;
+            return Frequencies;
         }
 
         /// <summary>
@@ -126,8 +139,8 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void deleteFrequencies()
         {
-            this.Frequencies.Clear();
-            regenerateFrequencyArray(this.Frequencies);
+            Frequencies.Clear();
+            regenerateFrequencyArray(Frequencies);
         }
 
         /// <summary>
@@ -135,8 +148,8 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void replaceFrequencies(List<short> newFreqs)
         {
-            this.Frequencies = newFreqs;
-            regenerateFrequencyArray(this.Frequencies);
+            Frequencies = newFreqs;
+            regenerateFrequencyArray(Frequencies);
         }
 
         /// <summary>
@@ -144,9 +157,9 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void incrementTechLevel()
         {
-            if (this.TechLevel < 3 && !this.isKSC)
+            if (TechLevel < 3 && !isKSC)
             {
-                this.TechLevel++;
+                TechLevel++;
                 refresh();
             }
         }
@@ -156,9 +169,9 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void decrementTechLevel()
         {
-            if (this.TechLevel > 0 && !this.isKSC)
+            if (TechLevel > 0 && !isKSC)
             {
-                this.TechLevel--;
+                TechLevel--;
                 refresh();
             }
         }
@@ -168,31 +181,31 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public void setTechLevel(short level)
         {
-            if (level >= 0 && level <= 3 && !this.isKSC)
+            if (level is >= 0 and <= 3 && !isKSC)
             {
-                this.TechLevel = level;
+                TechLevel = level;
                 refresh();
             }
         }
 
         /// <summary>
-        /// Update lat and long of celestial body
+        /// Update latitude and longitude of celestial body
         /// </summary>
-        public void setLatLongCoords(double lat, double lon, bool persistent = true)
+        public void setLatLongCoords(double setLat, double setLon, bool persistent = true)
         {
-            this.OverrideLatLongAlt = persistent;
-            this.latitude = this.CustomLatitude = lat;
-            this.longitude = this.CustomLongitude = lon;
+            OverrideLatLongAlt = persistent;
+            latitude = CustomLatitude = setLat;
+            longitude = CustomLongitude = setLon;
             refresh();
         }
 
         /// <summary>
         /// Update altitude on celestial body
         /// </summary>
-        public void setAltitude(double alt, bool persistent = false)
+        public void setAltitude(double setAlt, bool persistent = false)
         {
-            this.OverrideLatLongAlt = persistent;
-            this.altitude = this.CustomAltitude = alt;
+            OverrideLatLongAlt = persistent;
+            altitude = CustomAltitude = setAlt;
             refresh();
         }
 
@@ -201,48 +214,52 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         protected override void Start()
         {
-            if (groundStationHeadline == null)
+            groundStationHeadline ??= new GUIStyle(HighLogic.Skin.label)
             {
-                groundStationHeadline = new GUIStyle(HighLogic.Skin.label)
-                {
-                    fontSize = 12,
-                    normal = { textColor = Color.yellow },
-                    alignment = TextAnchor.MiddleCenter
-                };
-            }
+                fontSize = 12,
+                normal = { textColor = Color.yellow },
+                alignment = TextAnchor.MiddleCenter
+            };
 
-            this.body = (this.CustomCelestialBody.Length > 0) ? FlightGlobals.Bodies.Find(x => x.name.Equals(this.CustomCelestialBody)) : base.GetComponentInParent<CelestialBody>();
+            body = (CustomCelestialBody.Length > 0) ? FlightGlobals.Bodies.Find(x => x.name.Equals(CustomCelestialBody)) : GetComponentInParent<CelestialBody>();
 
-            if(this.body == null)//one root cause is 3rd-party mod Making Less History, which disables 2 ground stations in Making History expansion
+            //one root cause is 3rd-party mod Making Less History, which disables 2 ground stations in Making History expansion
+            if (body == null)
             {
                 //self-destruct
-                CNCLog.Error("CommNet Home '{0}' self-destructed due to missing info", this.ID);
+                CNCLog.Error("CommNet Home '{0}' self-destructed due to missing info", ID);
                 CNCCommNetScenario.Instance.groundStations.Remove(this);
-                this.OnDestroy();
-                UnityEngine.Object.Destroy(this);
+                OnDestroy();
+                Destroy(this);
                 return;
             }
 
-            if (this.nodeTransform == null)
-            {
-                this.nodeTransform = base.nodeTransform;
-            }
+            // if (nodeTransform == null)
+            // {
+            //     nodeTransform = nodeTransform;
+            // }
 
             if (CommNetNetwork.Initialized)
             {
-                this.OnNetworkInitialized();
+                OnNetworkInitialized();
             }
 
-            GameEvents.CommNet.OnNetworkInitialized.Add(new EventVoid.OnEvent(this.OnNetworkInitialized));
+            GameEvents.CommNet.OnNetworkInitialized.Add(OnNetworkInitialized);
 
-            if (this.OverrideLatLongAlt)
+            if (OverrideLatLongAlt)
             {
-                this.latitude = this.CustomLatitude;
-                this.longitude = this.CustomLongitude;
-                this.altitude = this.CustomAltitude;
+                latitude = CustomLatitude;
+                longitude = CustomLongitude;
+                altitude = CustomAltitude;
             }
 
-            this.refresh();
+            refresh();
+        }
+
+        protected override void OnDestroy()
+        {
+            GameEvents.CommNet.OnNetworkInitialized.Remove(OnNetworkInitialized);
+            base.OnDestroy();
         }
 
         /// <summary>
@@ -256,21 +273,21 @@ namespace CommNetConstellation.CommNetLayer
             if (!(HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.TRACKSTATION))
                 return;
 
-            if ((!HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().enableGroundStations && !this.isKSC) || !MapView.MapIsEnabled || MapView.MapCamera == null)
+            if ((!HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().enableGroundStations && !isKSC) || !MapView.MapIsEnabled || MapView.MapCamera == null)
                 return;
 
             if (CNCCommNetScenario.Instance == null || CNCCommNetScenario.Instance.hideGroundStations)
                 return;
 
-            Vector3d worldPos = ScaledSpace.LocalToScaledSpace(this.comm.precisePosition);
+            Vector3d worldPos = ScaledSpace.LocalToScaledSpace(comm.precisePosition);
 
             if (MapView.MapCamera.transform.InverseTransformPoint(worldPos).z < 0f)
                 return;
 
-            if (isOccluded(this.comm.precisePosition, this.body))
+            if (isOccluded(comm.precisePosition, body))
                 return;
 
-            if (!isOccluded(this.comm.precisePosition, this.body) && this.IsCamDistanceToWide(this.comm.precisePosition))
+            if (!isOccluded(comm.precisePosition, body) && IsCamDistanceToWide(comm.precisePosition))
                 return;
 
             //maths calculations
@@ -280,7 +297,7 @@ namespace CommNetConstellation.CommNetLayer
 
             //draw the dot
             Color previousColor = GUI.color;
-            GUI.color = this.Color;
+            GUI.color = Color;
             GUI.DrawTexture(groundStationRect, stationTexture, ScaleMode.ScaleToFit, true);
             GUI.color = previousColor;
 
@@ -290,15 +307,15 @@ namespace CommNetConstellation.CommNetLayer
                 Rect headlineRect = groundStationRect;
 
                 //Name
-                Vector2 nameDim = CNCCommNetHome.groundStationHeadline.CalcSize(new GUIContent(this.stationName));
+                Vector2 nameDim = groundStationHeadline.CalcSize(new GUIContent(stationName));
                 headlineRect.x -= nameDim.x/2 - 5;
                 headlineRect.y -= nameDim.y + 5;
                 headlineRect.width = nameDim.x;
                 headlineRect.height = nameDim.y;
-                GUI.Label(headlineRect, this.stationName, CNCCommNetHome.groundStationHeadline);
+                GUI.Label(headlineRect, stationName, groundStationHeadline);
 
                 //build station information
-                if (this.TechLevel <= 0)
+                if (TechLevel <= 0)
                 {
                     stationInfoString = Localizer.Format("#CNC_CNCCommNetHome_nostation");//"Build a ground station";
                 }
@@ -314,19 +331,19 @@ namespace CommNetConstellation.CommNetLayer
                             freqStr += "\n" + Localizer.Format("#CNC_CNCCommNetHome_frequency") + " " + Frequencies[i];//"~ frequency"
                     }
 
-                    stationInfoString = string.Format("DSN Power: {1}\nTech Level: {0}\n{2}", 
-                                            this.TechLevel,
-                                            UIUtils.RoundToNearestMetricFactor(this.comm.antennaRelay.power, 2),
+                    stationInfoString = string.Format("DSN Power: {1}\nTech Level: {0}\n{2}",
+                                            TechLevel,
+                                            UIUtils.RoundToNearestMetricFactor(comm.antennaRelay.power, 2),
                                             freqStr);
                 }
 
                 headlineRect = groundStationRect;
-                Vector2 freqDim = CNCCommNetHome.groundStationHeadline.CalcSize(new GUIContent(stationInfoString));
+                Vector2 freqDim = groundStationHeadline.CalcSize(new GUIContent(stationInfoString));
                 headlineRect.x -= freqDim.x / 2 - 5;
                 headlineRect.y += groundStationRect.height + 5;
                 headlineRect.width = freqDim.x;
                 headlineRect.height = freqDim.y;
-                GUI.Label(headlineRect, stationInfoString, CNCCommNetHome.groundStationHeadline);
+                GUI.Label(headlineRect, stationInfoString, groundStationHeadline);
             }
         }
 
@@ -334,11 +351,11 @@ namespace CommNetConstellation.CommNetLayer
         /// Check whether this vector3 location is behind the body
         /// Original code by regex from https://github.com/NathanKell/RealSolarSystem/blob/master/Source/KSCSwitcher.cs
         /// </summary>
-        private bool isOccluded(Vector3d position, CelestialBody body)
+        private bool isOccluded(Vector3d position, CelestialBody cBody)
         {
-            Vector3d camPos = ScaledSpace.ScaledToLocalSpace(PlanetariumCamera.Camera.transform.position);
+            var camPos = ScaledSpace.ScaledToLocalSpace(PlanetariumCamera.Camera.transform.position);
 
-            if (Vector3d.Angle(camPos - position, body.position - position) > 90)
+            if (Vector3d.Angle(camPos - position, cBody.position - position) > 90)
                 return false;
             return true;
         }
@@ -362,7 +379,7 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         public int CompareTo(CNCCommNetHome other)
         {
-            return this.stationName.CompareTo(other.stationName);
+            return string.Compare(stationName, other.stationName, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -372,11 +389,11 @@ namespace CommNetConstellation.CommNetLayer
         {
             if (list.Count == 0)
             {
-                sorted_frequency_array = new short[] { };
+                sorted_frequency_array = [];
             }
 
             sorted_frequency_array = new short[list.Count];
-            for(int i=0; i< list.Count; i++)
+            for (int i=0; i< list.Count; i++)
             {
                 sorted_frequency_array[i] = list[i];
             }
@@ -389,45 +406,45 @@ namespace CommNetConstellation.CommNetLayer
         /// </summary>
         protected void refresh()
         {
-            if (this.comm == null)
+            if (comm == null)
             {
                 if (!HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().enableGroundStations)
                 {
-                    CNCLog.Verbose("Ground station '{0}': CommNet option of enabling ground stations is disabled", this.ID);
+                    CNCLog.Verbose("Ground station '{0}': CommNet option of enabling ground stations is disabled", ID);
                 }
                 else
                 {
-                    CNCLog.Verbose("Ground station '{0}': Null CommNode, likely due to a third-party CommNet mod", this.ID);
+                    CNCLog.Verbose("Ground station '{0}': Null CommNode, likely due to a third-party CommNet mod", ID);
                 }
                 return;
             }
 
-            if(this.comm != null && (this.comm.displayName.Length < 1 || this.comm.name.Length < 1))
+            if(comm != null && (comm.displayName.Length < 1 || comm.name.Length < 1))
             {
-                this.comm.name = this.comm.displayName = stationName; //required for visual sequence of connected nodes
+                comm.name = comm.displayName = stationName; //required for visual sequence of connected nodes
             }
 
             // Obtain Tech Level of Tracking Station in KCS
-            if (this.isKSC)
+            if (isKSC)
             {
-                this.TechLevel = (short)((2 * ScenarioUpgradeableFacilities.GetFacilityLevel(SpaceCenterFacility.TrackingStation)) + 1);
+                TechLevel = (short)((2 * ScenarioUpgradeableFacilities.GetFacilityLevel(SpaceCenterFacility.TrackingStation)) + 1);
             }
 
             // Update power of ground station
-            this.comm.antennaRelay.Update(GetDSNRange(this.TechLevel), GameVariables.Instance.GetDSNRangeCurve(), false);
+            comm.antennaRelay.Update(GetDSNRange(TechLevel), GameVariables.Instance.GetDSNRangeCurve(), false);
 
             // Generate ground station information
-            stationInfoString = (this.TechLevel == 0) ? "Build a ground station" :
+            stationInfoString = (TechLevel == 0) ? "Build a ground station" :
                                                     string.Format("DSN Power: {1}\nBeamwidth: {2:0.00}°\nTech Level: {0}",
-                                                    this.TechLevel,
-                                                    UIUtils.RoundToNearestMetricFactor(this.comm.antennaRelay.power, 2),
+                                                    TechLevel,
+                                                    UIUtils.RoundToNearestMetricFactor(comm.antennaRelay.power, 2),
                                                     90.0);
 
             // Generate visual ground station mark
-            stationTexture = CNCCommNetHome.getGroundStationTexture(this.TechLevel);
+            stationTexture = getGroundStationTexture(TechLevel);
 
             // Update position on celestial body
-            this.comm.precisePosition = this.body.GetWorldSurfacePosition(this.latitude, this.longitude, this.altitude);
+            comm.precisePosition = body.GetWorldSurfacePosition(latitude, longitude, altitude);
         }
 
         /// <summary>
@@ -444,6 +461,7 @@ namespace CommNetConstellation.CommNetLayer
                 case 2:
                     return L2MarkTexture;
                 case 3:
+                    return L3MarkTexture;
                 default:
                     return L3MarkTexture;
             }
@@ -455,8 +473,8 @@ namespace CommNetConstellation.CommNetLayer
         /// Comment: Subclassing GameVariables.Instance.GetDSNRange to just change the ranges is too excessive at this point.
         public double GetDSNRange(short level)
         {
-            double power = 0.0;
-            if (this.isKSC)
+            double power;
+            if (isKSC)
             {
                 power = CNCSettings.Instance.KSCStationPowers[level - 1];
             }
@@ -472,7 +490,7 @@ namespace CommNetConstellation.CommNetLayer
                 }
             }
 
-            return power * ((double)HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().DSNModifier);
+            return power * HighLogic.CurrentGame.Parameters.CustomParams<CommNetParams>().DSNModifier;
         }
 
         /// <summary>
@@ -486,18 +504,18 @@ namespace CommNetConstellation.CommNetLayer
             if (!(HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.TRACKSTATION))
                 return;
 
-            if (this.comm != null && this.body != null)
+            if (comm != null && body != null)
             {
-                this.comm.precisePosition = this.body.GetWorldSurfacePosition(this.lat, this.lon, this.alt);
+                comm.precisePosition = body.GetWorldSurfacePosition(lat, lon, alt);
                 //this.comm.position has no setter
-                this.comm.transform.position = this.comm.precisePosition;
+                comm.transform.position = comm.precisePosition;
 
-                if (this.nodeTransform != null)
+                if (nodeTransform != null)
                 {
-                    this.nodeTransform.position = this.comm.precisePosition;
+                    nodeTransform.position = comm.precisePosition;
                 }
 
-                this.refresh();
+                refresh();
             }
         }
 

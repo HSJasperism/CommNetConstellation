@@ -11,7 +11,7 @@ namespace CommNetConstellation.CommNetLayer
         {
             CNCLog.Verbose("CommNet Body '{0}' added", stockBody.name);
 
-            this.body = stockBody.GetComponentInChildren<CelestialBody>();
+            body = stockBody.GetComponentInChildren<CelestialBody>();
 
             //this.occluder is initalised by OnNetworkInitialized() later
         }

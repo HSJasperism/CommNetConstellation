@@ -81,13 +81,13 @@ namespace CommNetConstellation.CommNetLayer
     }
 
     /// <summary>
-    /// As far as I can tell, CommNet telemtry interface is statically set up in Unity Edtior.
+    /// As far as I can tell, CommNet telemetry interface is statically set up in Unity Edtior.
     /// It isn't possible to dynamically add new buttons to the interface though it is possible
     /// to "disable" the existing buttons
     /// </summary>
     public class CNCTelemetryUpdate : TelemetryUpdate
     {
-        public static new CNCTelemetryUpdate Instance
+        public new static CNCTelemetryUpdate Instance
         {
             get;
             protected set;
@@ -135,9 +135,9 @@ namespace CommNetConstellation.CommNetLayer
         protected override void Awake()
         {
             //overrode to turn off stock's instance check
-            if (TelemetryUpdate.Instance != null && TelemetryUpdate.Instance is TelemetryUpdate)
+            if (TelemetryUpdate.Instance && TelemetryUpdate.Instance != null)
             {
-                UnityEngine.Object.DestroyImmediate(TelemetryUpdate.Instance);
+                DestroyImmediate(TelemetryUpdate.Instance);
                 TelemetryUpdate.Instance = this;
             }
         }

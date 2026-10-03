@@ -53,15 +53,20 @@ namespace CommNetConstellation.UI.VesselMgtTools
         {
             try
             {
-                Constellation thisConstellation = CNCCommNetScenario.Instance.constellations.Find(x => x.frequency == short.Parse(frequencyInput.uiItem.GetComponent<TMP_InputField>().text));
+                Constellation thisConstellation = CNCCommNetScenario.Instance.constellations.Find(x =>
+                    x.frequency == short.Parse(frequencyInput.uiItem.GetComponent<TMP_InputField>().text));
 
                 if (thisConstellation != null)
                 {
                     constellationColorImage.uiItem.GetComponent<RawImage>().color = thisConstellation.color;
-                    return "<b>"+Localizer.Format("#CNC_getConstellationName_Constellation") +"</b>: " + thisConstellation.name;//Constellation
+                    return "<b>" + Localizer.Format("#CNC_getConstellationName_Constellation") + "</b>: " +
+                           thisConstellation.name; //Constellation
                 }
             }
-            catch (Exception e) { }
+            catch (Exception e)
+            {
+                CNCLog.Error(e);
+            }
 
             constellationColorImage.uiItem.GetComponent<RawImage>().color = Color.clear;
             return Localizer.Format("#CNC_getConstellationName_Unrecognised");//"<b>Constellation</b>: Unrecognised"
@@ -88,7 +93,7 @@ namespace CommNetConstellation.UI.VesselMgtTools
                     }
                     else if (!Constellation.isFrequencyValid(userFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " + 
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " +
                     }
 
                     //ALL OK
@@ -106,21 +111,24 @@ namespace CommNetConstellation.UI.VesselMgtTools
                             this.cncVessel.updateFrequency(thisAntenna, userFreq);
                     }
                     this.cncVessel.rebuildFreqList();
-                    
+
                     actionCallbacks[0]();
                 }
                 catch (FormatException e)
                 {
-                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format"));//"Frequency must be numeric only"
+                    CNCLog.Error(e);
+                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format")); //"Frequency must be numeric only"
                 }
                 catch (OverflowException e)
                 {
+                    CNCLog.Error(e);
                     throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue));//string.Format("Frequency must be equal to or less than {0}", )
                 }
 
             }
             catch (Exception e)
             {
+                CNCLog.Error(e);
                 ScreenMessage msg = new ScreenMessage("<color=red>" + e.Message + "</color>", CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);
                 ScreenMessages.PostScreenMessage(msg);
             }

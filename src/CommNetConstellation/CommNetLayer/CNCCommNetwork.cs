@@ -10,7 +10,7 @@ namespace CommNetConstellation.CommNetLayer
     public class CNCCommNetwork : CommNetwork
     {
         private const int REFRESH_TICKS = 50;
-        private int mTick = 0, mTickIndex = 0;
+        private int mTick, mTickIndex;
 
         private short publicFreq = CNCSettings.Instance.PublicRadioFrequency;
 

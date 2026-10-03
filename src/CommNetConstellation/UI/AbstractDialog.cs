@@ -32,11 +32,11 @@ namespace CommNetConstellation.UI
 
         protected string dismissButtonText = Localizer.Format("#CNC_Generic_Close");//"Close"
         protected bool showCloseButton = true;
-        protected bool showVersion = false;
+        protected bool showVersion;
         protected bool blockBackgroundInputs = true;
         protected bool draggable = true;
 
-        protected PopupDialog popupDialog = null;
+        protected PopupDialog popupDialog;
 
         public AbstractDialog(string dialogUniqueHandler, string dialogTitle, float normalizedCenterX, float normalizedCenterY, int windowWidth, int windowHeight, DialogOptions[] args)
         {

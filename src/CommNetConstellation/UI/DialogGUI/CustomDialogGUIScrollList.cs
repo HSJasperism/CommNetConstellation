@@ -7,8 +7,8 @@ namespace CommNetConstellation.UI.DialogGUI
     /// </summary>
     public class CustomDialogGUIScrollList : DialogGUIScrollList
     {
-        protected bool defaultTop = false;
-        protected bool defaultBottom = false;
+        protected bool defaultTop;
+        protected bool defaultBottom;
 
         public CustomDialogGUIScrollList(Vector2 size, bool hScroll, bool vScroll, DialogGUILayoutBase layout) : 
             base(size, hScroll, vScroll, layout)

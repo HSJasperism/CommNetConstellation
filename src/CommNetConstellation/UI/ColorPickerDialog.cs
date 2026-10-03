@@ -28,10 +28,10 @@ namespace CommNetConstellation.UI
         private Color chosenColor;
         private DialogGUIImage newColorImage;
 
-        private float hueValue = 0f;
+        private float hueValue;
         private int sliderHeight = 5;
 
-        private bool buttonPressing = false;
+        private bool buttonPressing;
 
         public ColorPickerDialog(Color userColor, Callback<Color> callbackForChosenColor) : base("colorpicker",
                                                                                                 "Color Picker",

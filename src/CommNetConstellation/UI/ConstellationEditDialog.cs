@@ -17,7 +17,7 @@ namespace CommNetConstellation.UI
         private string actionButtonText = Localizer.Format("#CNC_ConstellationEdit_actionButtonText_Create");//"Create"
 
         private Color constellColor = Color.white;
-        private Constellation existingConstellation = null;
+        private Constellation existingConstellation;
 
         private static readonly Texture2D colorTexture = UIUtils.loadImage("colorDisplay");
         private DialogGUIImage constellationColorImage;
