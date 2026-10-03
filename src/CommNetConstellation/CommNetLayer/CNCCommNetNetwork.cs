@@ -1,5 +1,4 @@
 ﻿using CommNet;
-using UnityEngine;
 
 namespace CommNetConstellation.CommNetLayer
 {
@@ -12,7 +11,7 @@ namespace CommNetConstellation.CommNetLayer
         //private float nextUpdateTime = 0.0f;
         //private const float networkInterval = 0.1f; // in seconds
 
-        private bool isPlanetarium = false;
+        private bool isPlanetarium;
 
         protected override void Awake()
         {
@@ -46,18 +45,6 @@ namespace CommNetConstellation.CommNetLayer
 
             CommNet = new CNCCommNetwork();
             GameEvents.CommNet.OnNetworkInitialized.Fire();
-        }
-
-        protected override void Update()
-        {
-            //Comment: Not recommended to run along with other active optimisation of evaluating
-            //subset of connections in CNCCommNetwork.UpdateNetwork()
-            //Effect of running both optimisations is unacceptable low rate of connection check per second
-            //if (Time.time >= nextUpdateTime)
-            //{
-            base.Update();
-                //nextUpdateTime += networkInterval;
-            //}
         }
     }
 }
