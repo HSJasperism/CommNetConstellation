@@ -36,8 +36,8 @@ using System.Runtime.InteropServices;
 // Don't include the patch revision in the AssemblyVersion - as this will break any dependent
 // DLLs any time it changes.  Breaking on a minor revision is probably acceptable - it's
 // unlikely that there wouldn't be other breaking changes on a minor version change.
-[assembly: AssemblyVersion("1.5.*")]
-[assembly: AssemblyFileVersion("1.5.*")]
+[assembly: AssemblyVersion("1.5")]
+[assembly: AssemblyFileVersion("1.5.7")]
 
 // Use KSPAssembly to allow other DLLs to make this DLL a dependency in a
 // non-hacky way in KSP.  Format is (AssemblyProduct, major, minor), and it
