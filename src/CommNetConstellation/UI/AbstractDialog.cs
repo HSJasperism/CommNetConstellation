@@ -182,7 +182,7 @@ namespace CommNetConstellation.UI
              * |                     |
              * |---------------------|
              * |       [CLOSE]   [XX]|
-             * -----------------------
+             * ----------------------- 
              */
 
             List<DialogGUIBase> dialogComponentList;
@@ -204,7 +204,7 @@ namespace CommNetConstellation.UI
             DialogGUIBase[] footer;
             if (!showVersion && showCloseButton)
             {
-                footer = new DialogGUIBase[]
+                footer = new DialogGUIBase[] 
                     {
                     new DialogGUIFlexibleSpace(),
                     new DialogGUIButton(dismissButtonText, dismiss),
@@ -217,7 +217,7 @@ namespace CommNetConstellation.UI
                 footer = new DialogGUIBase[]
                     {
                     new DialogGUIFlexibleSpace(),
-                    new DialogGUILabel(GameUtils.Version)
+                    new DialogGUILabel(GameUtils.Version, false, false)
                     };
                 dialogComponentList.Add(new DialogGUIHorizontalLayout(footer));
             }
@@ -228,7 +228,7 @@ namespace CommNetConstellation.UI
                     new DialogGUIFlexibleSpace(),
                     new DialogGUIButton(dismissButtonText, dismiss),
                     new DialogGUIFlexibleSpace(),
-                    new DialogGUILabel(GameUtils.Version)
+                    new DialogGUILabel(GameUtils.Version, false, false)
                     };
                 dialogComponentList.Add(new DialogGUIHorizontalLayout(footer));
             }
