@@ -7,28 +7,30 @@ namespace CommNetConstellation
     /// </summary>
     public static class CNCLog
     {
-        public const string NAME_LOG_PREFIX = "[CommNet Constellation]";
+        public static readonly string NAME_LOG_PREFIX = "CommNet Constellation";
 
-        public static void Info(string message, params object[] param)
+        public static void Verbose(string message, params object[] param)
         {
-            UnityEngine.Debug.Log($"{NAME_LOG_PREFIX} {string.Format(message, param)}");
+            UnityEngine.Debug.Log($"[{NAME_LOG_PREFIX}] {string.Format(message, param)}");
         }
 
-        public static void Verbose(string message)
+        public static void Debug(string message, params object[] param)
         {
             #if DEBUG
-            UnityEngine.Debug.Log($"{NAME_LOG_PREFIX} Debug: {message}");
+            UnityEngine.Debug.Log(string.Format("[{0}] Debug: {1}", NAME_LOG_PREFIX, string.Format(message, param)));
             #endif
         }
 
-        public static void Error(string message)
+        public static void Error(string message, params object[] param)
         {
-            UnityEngine.Debug.LogError($"{NAME_LOG_PREFIX} Error: {message}");
+            UnityEngine.Debug.LogError($"[{NAME_LOG_PREFIX}] Error: {string.Format(message, param)}");
         }
 
-        public static void Error(Exception e)
+        public static void Error(Exception ex)
         {
-            UnityEngine.Debug.LogError($"{NAME_LOG_PREFIX} Exception:\n{e}");
+            #if DEBUG
+            UnityEngine.Debug.LogException(ex);
+            #endif
         }
     }
 }
