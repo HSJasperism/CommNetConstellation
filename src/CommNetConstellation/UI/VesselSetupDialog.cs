@@ -26,7 +26,7 @@ namespace CommNetConstellation.UI
         private CustomDialogGUIScrollList scrollArea;
 
         public VesselSetupDialog(string title, Vessel vessel, Callback<Vessel>  updateCallback) : base("vesselEdit",
-                                                                                                                title, 
+                                                                                                                title,
                                                                                                                 0.5f, //x
                                                                                                                 0.5f, //y
                                                                                                                 550, //width
@@ -69,16 +69,16 @@ namespace CommNetConstellation.UI
             List<short> vesselFrequencyList = cncVessel.getFrequencyList();
             vesselFrequencyList.Sort();
 
-            listComponments.Add(new DialogGUIHorizontalLayout(true, false, 0, new RectOffset(), TextAnchor.UpperCenter, new DialogGUIBase[] { new DialogGUILabel(this.description + "\n\n", false, false) }));
+            listComponments.Add(new DialogGUIHorizontalLayout(true, false, 0, new RectOffset(), TextAnchor.UpperCenter, new DialogGUIBase[] { new DialogGUILabel(this.description + "\n\n") }));
 
             //frequency list
-            listComponments.Add(new DialogGUILabel("<b>" + Localizer.Format("#CNC_VesselSetup_ActiveFrequencies") + "</b>", false, false));//Active frequencies
+            listComponments.Add(new DialogGUILabel("<b>" + Localizer.Format("#CNC_VesselSetup_ActiveFrequencies") + "</b>"));//Active frequencies
             DialogGUIBase[] frequencyRows;
             if (vesselFrequencyList.Count == 0)
             {
                 frequencyRows = new DialogGUIBase[2];
                 frequencyRows[0] = new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true);
-                frequencyRows[1] = new DialogGUILabel(Localizer.Format(nofreqMessage), nofreqMessageStyle, true, false);
+                frequencyRows[1] = new DialogGUILabel(Localizer.Format(nofreqMessage), nofreqMessageStyle, true);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace CommNetConstellation.UI
 
             if (vesselFrequencyList.Count == 0)
             {
-                frequencyRowLayout.AddChild(new DialogGUILabel(Localizer.Format(nofreqMessage), nofreqMessageStyle, true, false));
+                frequencyRowLayout.AddChild(new DialogGUILabel(Localizer.Format(nofreqMessage), nofreqMessageStyle, true));
             }
 
             registerLayoutComponents(frequencyRowLayout);

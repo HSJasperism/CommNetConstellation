@@ -79,20 +79,18 @@ namespace CommNetConstellation.UI.VesselMgtTools
                     short inputFreq = short.Parse(freqString);
 
                     //Check frequency
-                    if (inputFreq < 0)
+
+                    if (!Constellation.isFrequencyValid(inputFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_negative"));//"Frequency cannot be negative"
-                    }
-                    else if (!GameUtils.NonLinqAny(CNCCommNetScenario.Instance.constellations, inputFreq))
-                    {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Exist"));//"Please choose an existing constellation"
-                    }
-                    else if (!Constellation.isFrequencyValid(inputFreq))
-                    {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " +
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue)); //"Frequency must be between 0 and " +
                     }
 
-                    if (cncVessel != null && antennaInfo != null && inputFreq >= 0)
+                    if (!GameUtils.NonLinqAny(CNCCommNetScenario.Instance.constellations, inputFreq))
+                    {
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Exist")); //"Please choose an existing constellation"
+                    }
+
+                    if (cncVessel != null && antennaInfo != null)
                     {
                         cncVessel.updateFrequency(antennaInfo, inputFreq);
                         cncVessel.OnAntennaChange();
