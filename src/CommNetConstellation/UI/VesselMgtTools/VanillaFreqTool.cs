@@ -87,9 +87,13 @@ namespace CommNetConstellation.UI.VesselMgtTools
                     short userFreq = short.Parse(frequencyInput.uiItem.GetComponent<TMP_InputField>().text);
 
                     //Check frequency
-                    if (!Constellation.isFrequencyValid(userFreq))
+                    if (userFreq < 0)
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue)); //"Frequency must be between 0 and " +
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_negative"));//"Frequency cannot be negative"
+                    }
+                    else if (!Constellation.isFrequencyValid(userFreq))
+                    {
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " +
                     }
 
                     //ALL OK

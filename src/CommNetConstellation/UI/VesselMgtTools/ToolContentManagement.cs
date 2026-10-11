@@ -20,73 +20,82 @@ namespace CommNetConstellation.UI.VesselMgtTools
         public string codename;
         public string toolName;
 
-        protected AbstractMgtTool(CommNetVessel thisVessel, string uniqueCodename, string inputToolName, List<Callback> inputActionCallbacks = null)
+        public AbstractMgtTool(CommNetVessel thisVessel, string uniqueCodename, string toolName, List<Callback> actionCallbacks = null)
         {
             if (!(thisVessel is CNCCommNetVessel))
             {
-                CNCLog.Error($"Vessel {thisVessel.Vessel.vesselName} connection is not of type CNCCommNetVessel!");
+                CNCLog.Error("Vessel '{0}''s connection is not of type CNCCommNetVessel!", thisVessel.Vessel.vesselName);
                 return;
             }
 
-            cncVessel = (CNCCommNetVessel)thisVessel;
-            codename = uniqueCodename + "_mgttool";
-            toolName = inputToolName;
-            actionCallbacks = inputActionCallbacks;
+            this.cncVessel = (CNCCommNetVessel)thisVessel;
+            this.codename = uniqueCodename + "_mgttool";
+            this.toolName = toolName;
+            this.actionCallbacks = actionCallbacks;
         }
 
         protected void selfRefresh()
         {
-            toolManagement.selectTool(codename);
+            this.toolManagement.selectTool(this.codename);
         }
 
         public abstract List<DialogGUIBase> getContentComponents();
         public virtual void cleanup()
         {
-            antennas = null;
-            initialFrequencies = null;
+            this.antennas = null;
+            this.initialFrequencies = null;
         }
 
         public virtual void precompute()
         {
-            antennas = cncVessel.getAllAntennaInfo(true);
-            initialFrequencies = cncVessel.getFrequencyList();
+            this.antennas = this.cncVessel.getAllAntennaInfo(true);
+            this.initialFrequencies = this.cncVessel.getFrequencyList();
         }
     }
 
-    public class ToolContentManagement(float inputWidth, float inputHeight)
+    public class ToolContentManagement
     {
         protected DialogGUIVerticalLayout toolContentLayout;
-        protected List<AbstractMgtTool> tools = new List<AbstractMgtTool>();
-        private AbstractMgtTool currentTool = null;
+        protected List<AbstractMgtTool> tools;
+        private AbstractMgtTool currentTool;
+        private float width, height;
         protected CustomDialogGUIScrollList scrollArea;
+
+        public ToolContentManagement(float width, float height)
+        {
+            this.tools = new List<AbstractMgtTool>();
+            this.currentTool = null;
+            this.width = width;
+            this.height = height;
+        }
 
         public void add(AbstractMgtTool newTool)
         {
-            tools.Add(newTool);
+            this.tools.Add(newTool);
             newTool.toolManagement = this;
         }
 
         public void clear()
         {
-            tools.Clear();
+            this.tools.Clear();
         }
 
         public List<DialogGUIBase> getLayoutContents()
         {
             List<DialogGUIBase> layout = new List<DialogGUIBase>();
 
-            layout.Add(new DialogGUILabel("<b>" + Localizer.Format("#CNC_getContentCompon_ManagementTools") + "</b>"));//Management tools
-            DialogGUIBase[] buttons = new DialogGUIBase[tools.Count];
-            for (int i = 0; i < tools.Count; i++)
+            layout.Add(new DialogGUILabel("<b>" + Localizer.Format("#CNC_getContentCompon_ManagementTools") + "</b>", false, false));//Management tools
+            DialogGUIBase[] buttons = new DialogGUIBase[this.tools.Count];
+            for (int i = 0; i < this.tools.Count; i++)
             {
-                AbstractMgtTool thisTool = tools[i];
+                AbstractMgtTool thisTool = this.tools[i];
                 buttons[i] = new DialogGUIButton(thisTool.toolName, delegate { selectTool(thisTool.codename); }, 50, 32, false);
             }
             layout.Add(new DialogGUIHorizontalLayout(true, false, 0, new RectOffset(), TextAnchor.MiddleLeft, buttons));
 
             //Tool content
-            toolContentLayout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(5, 25, 5, 5), TextAnchor.UpperLeft, new DialogGUIBase[] { new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true) });
-            scrollArea = new CustomDialogGUIScrollList(new Vector2(inputWidth, inputHeight), false, true, toolContentLayout);
+            this.toolContentLayout = new DialogGUIVerticalLayout(10, 100, 4, new RectOffset(5, 25, 5, 5), TextAnchor.UpperLeft, new DialogGUIBase[] { new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true) });
+            scrollArea = new CustomDialogGUIScrollList(new Vector2(this.width, this.height), false, true, this.toolContentLayout);
             layout.Add(scrollArea);
 
             return layout;
@@ -94,22 +103,22 @@ namespace CommNetConstellation.UI.VesselMgtTools
 
         public void selectTool(string toolCodename)
         {
-            if(currentTool != null)
-                currentTool.cleanup();
+            if(this.currentTool != null)
+                this.currentTool.cleanup();
 
-            AbstractDialog.deregisterLayoutComponents(toolContentLayout);
+            AbstractDialog.deregisterLayoutComponents(this.toolContentLayout);
 
-            if ((currentTool = tools.Find(x => x.codename.Equals(toolCodename))) == null)
+            if ((this.currentTool = this.tools.Find(x => x.codename.Equals(toolCodename))) == null)
             {
-                toolContentLayout.AddChildren(new DialogGUIBase[] { }); // empty
+                this.toolContentLayout.AddChildren(new DialogGUIBase[] { }); // empty
             }
             else
             {
-                currentTool.precompute();
-                toolContentLayout.AddChildren(currentTool.getContentComponents().ToArray());
+                this.currentTool.precompute();
+                this.toolContentLayout.AddChildren(this.currentTool.getContentComponents().ToArray());
             }
 
-            AbstractDialog.registerLayoutComponents(toolContentLayout);
+            AbstractDialog.registerLayoutComponents(this.toolContentLayout);
             scrollArea.Resize();
         }
     }
