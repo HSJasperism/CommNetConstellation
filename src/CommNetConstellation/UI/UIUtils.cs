@@ -8,27 +8,16 @@ namespace CommNetConstellation.UI
     /// <summary>
     /// Swiss Army knife for interface use cases
     /// </summary>
-    public class UIUtils
+    public static class UIUtils
     {
-        private static string _TextureDirectory = ""; // one-time calculation for performance reason
+        private static string _TextureDirectory = string.Empty; // one-time calculation for performance reason
+
         private static string TextureDirectory
         {
             get
             {
                 if (_TextureDirectory.Length <= 0)
-                {
-                    AssemblyLoader.LoadedAssembly assemblyDLL = null;
-                    for (int i = 0; i <= AssemblyLoader.loadedAssemblies.Count; i++)
-                    {
-                        if (AssemblyLoader.loadedAssemblies[i].assembly.GetName().Name.Equals("CommNetConstellation"))
-                        {
-                            assemblyDLL = AssemblyLoader.loadedAssemblies[i];
-                            break;
-                        }
-                    }
-
-                    _TextureDirectory = assemblyDLL.url.Replace("Plugins", "Textures") + "/";
-                }
+                    _TextureDirectory = $"{CNCSettings.AssemblyDLL.url.Replace("Plugins", "Textures")}/";
                 return _TextureDirectory;
             }
         }
@@ -38,23 +27,31 @@ namespace CommNetConstellation.UI
         /// </summary>
         public static Texture2D loadImage(string fileName)
         {
-            string str = TextureDirectory + fileName;
-            if (GameDatabase.Instance.ExistsTexture(str))
+            Texture2D image;
+            string fullFilePath = TextureDirectory + fileName;
+
+            if (GameDatabase.Instance.ExistsTexture(fullFilePath))
             {
-                return GameDatabase.Instance.GetTexture(str, false);
+                image = GameDatabase.Instance.GetTexture(fullFilePath, false);
             }
             else
             {
-                CNCLog.Error("Cannot find the texture '{0}': {1}", fileName, str);
-                return Texture2D.blackTexture;
+                CNCLog.Error($"Cannot find the texture '{fileName}': {fullFilePath}");
+                image = Texture2D.blackTexture;
             }
+
+            return image;
         }
 
         /// <summary>
         /// Convert the color to hex string (#RRGGBB)
         /// </summary>
         //http://answers.unity3d.com/questions/1102232/how-to-get-the-color-code-in-rgb-hex-from-rgba-uni.html
-        public static string colorToHex(Color thisColor) { return string.Format("#{0:X2}{1:X2}{2:X2}", toByte(thisColor.r), toByte(thisColor.g), toByte(thisColor.b)); }
+        public static string colorToHex(Color thisColor)
+        {
+            return string.Format("#{0:X2}{1:X2}{2:X2}", toByte(thisColor.r), toByte(thisColor.g), toByte(thisColor.b));
+        }
+
         private static byte toByte(float f)
         {
             f = Mathf.Clamp01(f);
@@ -67,9 +64,11 @@ namespace CommNetConstellation.UI
         //https://forum.unity3d.com/threads/best-easiest-way-to-change-color-of-certain-pixels-in-a-single-sprite.223030/
         public static Texture2D createAndColorize(int width, int height, Color thisColor)
         {
-            Texture2D newTexture = new Texture2D(width, height);
-            newTexture.filterMode = FilterMode.Point;
-            newTexture.wrapMode = TextureWrapMode.Clamp;
+            var newTexture = new Texture2D(width, height)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
 
             for (int y = 0; y < newTexture.height; y++)
             {
@@ -104,9 +103,11 @@ namespace CommNetConstellation.UI
         /// </summary>
         public static Texture2D createAndOverlay(Texture2D baseTexture, Texture2D frontTexture)
         {
-            Texture2D newTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.ARGB32, false);
-            newTexture.filterMode = FilterMode.Point;
-            newTexture.wrapMode = TextureWrapMode.Clamp;
+            var newTexture = new Texture2D(baseTexture.width, baseTexture.height, TextureFormat.ARGB32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
 
             for (int y = 0; y < newTexture.height; y++)
             {
@@ -134,22 +135,20 @@ namespace CommNetConstellation.UI
         }
 
         /// <summary>
-        /// Easy method to convert list to string 
+        /// Easy method to convert list to string
         /// </summary>
-        public static string Concatenate<T>(IEnumerable<T> source, string delimiter)
+        public static string Concatenate<T>(IEnumerable<T> source, string delimiter = ",")
         {
-            var itr = source.GetEnumerator();
-            var s = new StringBuilder();
+            var result = new StringBuilder();
             bool first = true;
-            while (itr.MoveNext())
+            foreach (var item in source)
             {
-                if (first)
-                    first = false;
-                else
-                    s.Append(delimiter);
-                s.Append(itr.Current);
+                if (first) first = false;
+                else result.Append(delimiter);
+                result.Append(item);
             }
-            return s.ToString();
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -158,20 +157,20 @@ namespace CommNetConstellation.UI
         public static string RoundToNearestMetricFactor(double number, int decimalPlaces = 0)
         {
             string formatStr = "{0:0}";
-            if(decimalPlaces >= 1)
+            if (decimalPlaces >= 1)
             {
                 formatStr = "{0:0.";
-                for (int i=0; i< decimalPlaces; i++)
+                for (int i = 0; i < decimalPlaces; i++)
                     formatStr += "0";
                 formatStr += "}";
             }
 
             if (number > Math.Pow(10, 9))
-                return string.Format(formatStr+" G", number / Math.Pow(10, 9));
+                return string.Format(formatStr + " G", number / Math.Pow(10, 9));
             else if (number > Math.Pow(10, 6))
-                return string.Format(formatStr+" M", number / Math.Pow(10, 6));
+                return string.Format(formatStr + " M", number / Math.Pow(10, 6));
             else if (number > Math.Pow(10, 3))
-                return string.Format(formatStr+" k", number / Math.Pow(10, 3));
+                return string.Format(formatStr + " k", number / Math.Pow(10, 3));
             else
                 return string.Format(formatStr, number);
         }
@@ -205,12 +204,17 @@ namespace CommNetConstellation.UI
         /// Make new unreadble texture on subregion of a bigger texture
         /// Eg make a bunch of UI textures out of 1 giant texture of bunch subregions
         /// </summary>
-        public static Texture2D createSubregionTexture(Texture2D source, int startX, int startY, int subregionWidth, int subregionHeight, bool compress = false, bool readable = false)
+        public static Texture2D createSubregionTexture(Texture2D source, int startX, int startY, int subregionWidth,
+            int subregionHeight, bool compress = false, bool readable = false)
         {
             Texture2D newTexture = new Texture2D(subregionWidth, subregionHeight, TextureFormat.ARGB32, false);
             Color[] c = source.GetPixels(startX, startY, subregionWidth, subregionHeight, 0);
             newTexture.SetPixels(c, 0);
-            if (compress) { newTexture.Compress(true); }
+            if (compress)
+            {
+                newTexture.Compress(true);
+            }
+
             newTexture.Apply(false, !readable); //unreadable state has performance boost
 
             return newTexture;

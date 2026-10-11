@@ -52,7 +52,7 @@ namespace CommNetConstellation.UI
             DialogGUILabel currentLevelLabel = new DialogGUILabel("<b>" + Localizer.Format("#CNC_GroundStationBuild_currentLevelLabel") + "</b>");//Current tech level
             currentTexture = new DialogGUIImage(new Vector2(100, 100), Vector2.zero, Color.white, getLevelTexture(this.hostStation.TechLevel));
             DialogGUILabel currentPower = new DialogGUILabel(currentPowerFunc);
-            DialogGUIVerticalLayout currentLevelGroup = new DialogGUIVerticalLayout(100, 100, 4, new RectOffset(), TextAnchor.MiddleCenter, 
+            DialogGUIVerticalLayout currentLevelGroup = new DialogGUIVerticalLayout(100, 100, 4, new RectOffset(), TextAnchor.MiddleCenter,
                 new DialogGUIBase[] { currentLevelLabel, currentTexture, currentPower });
 
             //Upgrade arrow
@@ -62,10 +62,10 @@ namespace CommNetConstellation.UI
             DialogGUILabel nextLevelLabel = new DialogGUILabel("<b>" + Localizer.Format("#CNC_GroundStationBuild_nextLevelLabel") + "</b>");//Next tech level
             nextTexture = new DialogGUIImage(new Vector2(100, 100), Vector2.zero, Color.white, getLevelTexture((short)(this.hostStation.TechLevel + 1)));
             DialogGUILabel nextPower = new DialogGUILabel(nextPowerFunc);
-            DialogGUIVerticalLayout nextLevelGroup = new DialogGUIVerticalLayout(100, 100, 4, new RectOffset(), TextAnchor.MiddleCenter, 
+            DialogGUIVerticalLayout nextLevelGroup = new DialogGUIVerticalLayout(100, 100, 4, new RectOffset(), TextAnchor.MiddleCenter,
                 new DialogGUIBase[] { nextLevelLabel, nextTexture, nextPower });
 
-            listComponments.Add(new CustomDialogGUIScrollList(new Vector2(300-10, 150), false, false, 
+            listComponments.Add(new CustomDialogGUIScrollList(new Vector2(300-10, 150), false, false,
                                     new DialogGUIHorizontalLayout(TextAnchor.MiddleCenter, new DialogGUIBase[] { currentLevelGroup, arrowTexture, nextLevelGroup })));
 
             //Requirements
@@ -104,7 +104,7 @@ namespace CommNetConstellation.UI
                 double power = CNCSettings.Instance.GroundStationUpgradeablePowers[this.hostStation.TechLevel];
                 return Localizer.Format("#CNC_GroundStationBuild_DSNpower") + string.Format(" {0:0.00}", UIUtils.RoundToNearestMetricFactor(power, 2));//DSN Power: {0:0.00}
             }
-            
+
         }
 
         private string costFunc()
@@ -175,7 +175,7 @@ namespace CommNetConstellation.UI
                 case 3:
                     return L3PicTexture;
                 default:
-                    CNCLog.Error("No texture found for Tech Level {0}!", level);
+                    CNCLog.Error($"No texture found for Tech Level {level}!");
                     return null;
             }
         }

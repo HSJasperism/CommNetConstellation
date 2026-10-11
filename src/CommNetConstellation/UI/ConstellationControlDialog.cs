@@ -79,7 +79,7 @@ namespace CommNetConstellation.UI
         private Dictionary<short, TreeEntry> constellationDict = new Dictionary<short, TreeEntry>();
 
         public ConstellationControlDialog(string title) : base("CNCControl",
-                                                            title, 
+                                                            title,
                                                             0.8f, //x
                                                             0.5f, //y
                                                             600, //width
@@ -251,7 +251,7 @@ namespace CommNetConstellation.UI
 
         private void resetPublicConstClick()
         {
-            string message = Localizer.Format("#CNC_ConstellationControl_resetPublicMsg", CNCSettings.Instance.DefaultPublicName, UIUtils.colorToHex(CNCSettings.Instance.DefaultPublicColor));//string.Format("Revert to the default name '{0}' and color {1}?", 
+            string message = Localizer.Format("#CNC_ConstellationControl_resetPublicMsg", CNCSettings.Instance.DefaultPublicName, UIUtils.colorToHex(CNCSettings.Instance.DefaultPublicColor));//string.Format("Revert to the default name '{0}' and color {1}?",
             MultiOptionDialog warningDialog = new MultiOptionDialog("cncResetConstWindow", message, Localizer.Format("#CNC_ConstellationControl_Dialog_title"), HighLogic.UISkin, new DialogGUIBase[]//"Constellation"
             {
                 new DialogGUIButton(Localizer.Format("#CNC_Generic_Resetbutton"), resetPublicConstellation, true),//"Reset"
@@ -338,7 +338,7 @@ namespace CommNetConstellation.UI
             contentLayout.AddChild(newConstellationGUIRow);
 
             Stack<Transform> stack = new Stack<Transform>();
-            stack.Push(contentLayout.uiItem.gameObject.transform); // transform effect: new row goes to the end of the list 
+            stack.Push(contentLayout.uiItem.gameObject.transform); // transform effect: new row goes to the end of the list
             newConstellationGUIRow.Create(ref stack, HighLogic.UISkin);
         }
 
@@ -429,10 +429,10 @@ namespace CommNetConstellation.UI
                 case VesselListSort.RADIOFREQ:
                     return populateFreqVesselRows(sorting);
                 case VesselListSort.VESSELNAME:
-                    CNCLog.Verbose("VesselListSort.VESSELNAME not in use");
+                    CNCLog.Info("VesselListSort.VESSELNAME not in use");
                     return new List<DialogGUIHorizontalLayout>();
                 default:
-                    CNCLog.Verbose("Unknown VesselListSort");
+                    CNCLog.Info("Unknown VesselListSort");
                     return new List<DialogGUIHorizontalLayout>();
             }
         }
@@ -559,7 +559,7 @@ namespace CommNetConstellation.UI
             style.normal.textColor = Color.white;
             DialogGUILabel bodyLabel = new DialogGUILabel((expanded ? ">" : "<"), style);
             DialogGUILabel nameLabel = new DialogGUILabel(body.bodyName, style);
-            
+
             DialogGUIImage bodyImage = new DialogGUIImage(new Vector2(colorWidth + 50 - depth * depthWidth, 10f), Vector2.zero, Color.white, texture);
             DialogGUIHorizontalLayout imageBtnLayout = new DialogGUIHorizontalLayout(TextAnchor.MiddleLeft, new DialogGUIBase[] { new DialogGUISpace(10), bodyLabel, new DialogGUISpace(10), nameLabel, new DialogGUIFlexibleSpace(), bodyImage, new DialogGUISpace(10) });
             DialogGUIButton expandButton = new DialogGUIButton("", delegate { toggleCBodyButton(body); mapfilterChanged(MapViewFiltering.vesselTypeFilter); }, headerWidth - depth * depthWidth, 24, false, new DialogGUIBase[] { imageBtnLayout });

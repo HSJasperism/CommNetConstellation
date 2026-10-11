@@ -27,9 +27,9 @@ namespace CommNetConstellation.UI
         private DialogGUITextInput nameInput;
         private DialogGUITextInput frequencyInput;
 
-        public ConstellationEditDialog(string dialogTitle, 
-                                        Constellation thisConstellation, 
-                                        Callback<Constellation> creationCallback, 
+        public ConstellationEditDialog(string dialogTitle,
+                                        Constellation thisConstellation,
+                                        Callback<Constellation> creationCallback,
                                         Callback<Constellation, short> updateCallback) : base("constellationEdit",
                                                                                     dialogTitle,
                                                                                     0.5f, //x
@@ -132,13 +132,9 @@ namespace CommNetConstellation.UI
                     }
 
                     //Check frequency
-                    if (constellFreq < 0)
+                    if (!Constellation.isFrequencyValid(constellFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_negative"));//"Frequency cannot be negative"
-                    }
-                    else if (!Constellation.isFrequencyValid(constellFreq))
-                    {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " + 
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue)); //"Frequency must be between 0 and " +
                     }
                     else if (this.existingConstellation != null)
                     {
@@ -173,7 +169,7 @@ namespace CommNetConstellation.UI
                         string message = Localizer.Format("#CNC_ScreenMsg_ConstellationCreated", constellName, constellFreq);//string.Format("New constellation '{0}' of frequency {1} is created", )
                         ScreenMessages.PostScreenMessage(new ScreenMessage(message, CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER));
 
-                        CNCLog.Debug("New constellation: {0}, {1}", constellName, constellFreq);
+                        CNCLog.Verbose($"New constellation: {constellName}, {constellFreq}");
 
                         this.dismiss();
                     }
@@ -183,7 +179,7 @@ namespace CommNetConstellation.UI
                         short prevFreq = this.existingConstellation.frequency;
 
                         if (this.existingConstellation.frequency != constellFreq) // new frequency
-                        {    
+                        {
                             this.existingConstellation.frequency = constellFreq;
 
                             List<CNCCommNetVessel> affectedVessels = CNCCommNetScenario.Instance.getCommNetVessels().FindAll(x => x.getFrequencyList().Contains(prevFreq));
@@ -220,22 +216,24 @@ namespace CommNetConstellation.UI
                             changesCommitted = true;
                         }
 
-                        CNCLog.Debug("Updated constellation: {0}, {1}", constellName, constellFreq);
+                        CNCLog.Verbose($"Updated constellation: {constellName}, {constellFreq}");
 
                         if (changesCommitted)
                         {
                             updateCallback(this.existingConstellation, prevFreq);
                             this.dismiss();
                         }
-                    }                    
+                    }
                 }
                 catch (FormatException e)
                 {
-                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format"));//"Frequency must be numeric only"
+                    CNCLog.Error(e);
+                    throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format")); //"Frequency must be numeric only"
                 }
                 catch (OverflowException e)
                 {
-                    throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue));//string.Format("Frequency must be equal to or less than {0}", )
+                    CNCLog.Error(e);
+                    throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue)); //string.Format("Frequency must be equal to or less than {0}", )
                 }
             }
             catch (Exception e)

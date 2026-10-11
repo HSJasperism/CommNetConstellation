@@ -24,51 +24,51 @@ namespace CommNetConstellation.UI
         private static readonly Texture2D colorTexture = UIUtils.loadImage("colorDisplay");
 
         public AntennaSetupDialog(string title, Vessel vessel, Part antennaPart) : base("cncAntennaWindow",
-                                                                                    title, 
+                                                                                    title,
                                                                                     0.5f, //x
                                                                                     0.5f, //y
                                                                                     250, //width
                                                                                     210, //height
                                                                                     new DialogOptions[] { DialogOptions.HideCloseButton})
         {
-            this.hostVessel = vessel;
-            this.antennaModule = antennaPart.FindModuleImplementing<CNConstellationAntennaModule>();
-            this.description = Localizer.Format("#CNC_AntennaSetup_DescText2", antennaPart.partInfo.title);//string.Format("You are configuring this antenna '{0}'.", )
+            hostVessel = vessel;
+            antennaModule = antennaPart.FindModuleImplementing<CNConstellationAntennaModule>();
+            description = Localizer.Format("#CNC_AntennaSetup_DescText2", antennaPart.partInfo.title);//string.Format("You are configuring this antenna '{0}'.", )
 
-            this.GetInputLocks();
+            GetInputLocks();
         }
 
         protected override void OnPreDismiss()
         {
-            this.ReleaseInputLocks();
+            ReleaseInputLocks();
         }
 
         protected override List<DialogGUIBase> drawContentComponents()
         {
-            List<DialogGUIBase> listComponments = new List<DialogGUIBase>();
+            var listComponments = new List<DialogGUIBase>();
 
-            listComponments.Add(new DialogGUIHorizontalLayout(true, false, 0, new RectOffset(), TextAnchor.UpperCenter, new DialogGUIBase[] { new DialogGUILabel(this.description+"\n\n", false, false) }));
+            listComponments.Add(new DialogGUIHorizontalLayout(true, false, 0, new RectOffset(), TextAnchor.UpperCenter, new DialogGUIBase[] { new DialogGUILabel(description+"\n\n", false, false) }));
 
-            DialogGUILabel nameLabel = new DialogGUILabel("<b>"+Localizer.Format("#CNC_AntennaSetup_NameLabel") +"</b>", 40, 12);//Name
+            var nameLabel = new DialogGUILabel("<b>"+Localizer.Format("#CNC_AntennaSetup_NameLabel") +"</b>", 40, 12);//Name
             nameInput = new DialogGUITextInput(antennaModule.Name, false, CNCSettings.MaxLengthName, setNameInput, 145, 25);
-            DialogGUIButton defaultButton = new DialogGUIButton(Localizer.Format("#CNC_AntennaSetup_ResetButton"), defaultNameClick, 45, 25, false);//"Reset"
-            DialogGUIHorizontalLayout nameGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleCenter, new DialogGUIBase[] { nameLabel, nameInput, defaultButton });
+            var defaultButton = new DialogGUIButton(Localizer.Format("#CNC_AntennaSetup_ResetButton"), defaultNameClick, 45, 25, false);//"Reset"
+            var nameGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleCenter, new DialogGUIBase[] { nameLabel, nameInput, defaultButton });
             listComponments.Add(nameGroup);
 
-            DialogGUILabel freqLabel = new DialogGUILabel("<b>"+Localizer.Format("#CNC_Generic_FrequencyLabel") +"</b>", 52, 12);//Frequency
+            var freqLabel = new DialogGUILabel("<b>"+Localizer.Format("#CNC_Generic_FrequencyLabel") +"</b>", 52, 12);//Frequency
             frequencyInput = new DialogGUITextInput(antennaModule.Frequency.ToString(), false, CNCSettings.MaxDigits, setConstellFreq, 45, 25);
-            DialogGUIButton publicButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_PublicButton"), defaultFreqClick, 100, 25, false);//"Revert to public"
-            DialogGUIHorizontalLayout freqGRoup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleCenter, new DialogGUIBase[] { freqLabel, frequencyInput, publicButton });
+            var publicButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_PublicButton"), defaultFreqClick, 100, 25, false);//"Revert to public"
+            var freqGRoup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleCenter, new DialogGUIBase[] { freqLabel, frequencyInput, publicButton });
             listComponments.Add(freqGRoup);
 
             constellationColorImage = new DialogGUIImage(new Vector2(32, 32), Vector2.one, Color.white, colorTexture);
-            DialogGUILabel constNameLabel = new DialogGUILabel(getConstellationName, 200, 12);
-            DialogGUIHorizontalLayout constellationGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(5, 25, 5, 5), TextAnchor.MiddleCenter, new DialogGUIBase[] { constellationColorImage, constNameLabel });
+            var constNameLabel = new DialogGUILabel(getConstellationName, 200, 12);
+            var constellationGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(5, 25, 5, 5), TextAnchor.MiddleCenter, new DialogGUIBase[] { constellationColorImage, constNameLabel });
             listComponments.Add(new DialogGUIScrollList(new Vector2(200, 40), false, false, constellationGroup));
 
-            DialogGUIButton updateButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_UpdateButton"), updateAction, false);//"Update"
-            DialogGUIButton cancelButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_CancelButton"), delegate { this.dismiss(); }, false);//"Cancel"
-            DialogGUIHorizontalLayout actionGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleLeft, new DialogGUIBase[] { new DialogGUIFlexibleSpace(), updateButton, cancelButton, new DialogGUIFlexibleSpace() });
+            var updateButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_UpdateButton"), updateAction, false);//"Update"
+            var cancelButton = new DialogGUIButton(Localizer.Format("#CNC_Generic_CancelButton"), delegate { dismiss(); }, false);//"Cancel"
+            var actionGroup = new DialogGUIHorizontalLayout(true, false, 4, new RectOffset(), TextAnchor.MiddleLeft, new DialogGUIBase[] { new DialogGUIFlexibleSpace(), updateButton, cancelButton, new DialogGUIFlexibleSpace() });
             listComponments.Add(actionGroup);
 
             return listComponments;
@@ -87,6 +87,7 @@ namespace CommNetConstellation.UI
             }
             catch(FormatException e)
             {
+                CNCLog.Error(e);
                 thisConstellation = null;
             }
 
@@ -122,61 +123,61 @@ namespace CommNetConstellation.UI
                     }
 
                     //Check frequency
-                    if (inputFreq < 0)
+                    if (!Constellation.isFrequencyValid(inputFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_negative"));//"Frequency cannot be negative"
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue)); //"Frequency must be between 0 and " +
                     }
-                    else if (!GameUtils.NonLinqAny(CNCCommNetScenario.Instance.constellations, inputFreq))
+
+                    if (!GameUtils.NonLinqAny(CNCCommNetScenario.Instance.constellations, inputFreq))
                     {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Exist"));//"Please choose an existing constellation"
-                    }
-                    else if (!Constellation.isFrequencyValid(inputFreq))
-                    {
-                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Valid", short.MaxValue));//"Frequency must be between 0 and " + 
+                        throw new Exception(Localizer.Format("#CNC_CheckFrequency_Exist")); //"Please choose an existing constellation"
                     }
 
                     //ALL OK
-                    if (this.antennaModule.Frequency != inputFreq) // different frequency
+                    if (antennaModule.Frequency != inputFreq) // different frequency
                     {
-                        this.antennaModule.Frequency = inputFreq;
-                        ScreenMessage msg = new ScreenMessage(Localizer.Format("#CNC_ScreenMsg_FreqUpdate", inputFreq), CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);//string.Format("Frequency is updated to {0}", )
+                        antennaModule.Frequency = inputFreq;
+                        var msg = new ScreenMessage(Localizer.Format("#CNC_ScreenMsg_FreqUpdate", inputFreq), CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);//string.Format("Frequency is updated to {0}", )
                         ScreenMessages.PostScreenMessage(msg);
                         changesCommitted = true;
                     }
 
-                    if (!this.antennaModule.Name.Equals(inputName)) // different name
+                    if (!antennaModule.Name.Equals(inputName)) // different name
                     {
-                        this.antennaModule.Name = inputName;
-                        ScreenMessage msg = new ScreenMessage(Localizer.Format("#CNC_ScreenMsg_NameUpdate", this.antennaModule.Name), CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);//string.Format("Antenna is renamed to '{0}'", )
+                        antennaModule.Name = inputName;
+                        var msg = new ScreenMessage(Localizer.Format("#CNC_ScreenMsg_NameUpdate", antennaModule.Name), CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);//string.Format("Antenna is renamed to '{0}'", )
                         ScreenMessages.PostScreenMessage(msg);
                         changesCommitted = true;
                     }
 
-                    CNCLog.Debug("Updated antenna: {0}, {1}", inputName, inputFreq);
+                    CNCLog.Verbose($"Updated antenna: {inputName}, {inputFreq}");
 
                     if (changesCommitted)
                     {
-                        if (this.hostVessel != null)
+                        if (hostVessel != null)
                         {
-                            CNCCommNetVessel cncVessel = (CNCCommNetVessel)this.hostVessel.Connection;
+                            var cncVessel = (CNCCommNetVessel)hostVessel.Connection;
                             cncVessel.OnAntennaChange();
                         }
 
-                        this.dismiss();
+                        dismiss();
                     }
                 }
                 catch (FormatException e)
                 {
+                    CNCLog.Error(e);
                     throw new FormatException(Localizer.Format("#CNC_CheckFrequency_Format"));//"Frequency must be numeric only"
                 }
                 catch (OverflowException e)
                 {
+                    CNCLog.Error(e);
                     throw new OverflowException(Localizer.Format("#CNC_CheckFrequency_Overflow", short.MaxValue));//string.Format("Frequency must be equal to or less than {0}", )
                 }
             }
             catch (Exception e)
             {
-                ScreenMessage msg = new ScreenMessage("<color=red>" + e.Message + "</color>", CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);
+                CNCLog.Error(e);
+                var msg = new ScreenMessage("<color=red>" + e.Message + "</color>", CNCSettings.ScreenMessageDuration, ScreenMessageStyle.UPPER_CENTER);
                 ScreenMessages.PostScreenMessage(msg);
             }
         }
@@ -212,7 +213,7 @@ namespace CommNetConstellation.UI
         /// </summary>
         private void defaultNameClick()
         {
-            nameInput.uiItem.GetComponent<TMP_InputField>().text = this.antennaModule.part.partInfo.title;
+            nameInput.uiItem.GetComponent<TMP_InputField>().text = antennaModule.part.partInfo.title;
         }
     }
 }
